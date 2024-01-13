@@ -1,0 +1,8 @@
+
+coverage
+mock
+pydevd
+pylint
+pyserial
+playsound
+pyobjc
