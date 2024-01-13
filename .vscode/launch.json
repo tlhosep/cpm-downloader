@@ -21,7 +21,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
-            "justMyCode": true
+            "justMyCode": true,
         },
         {
             "name": "Start with logfile",
@@ -30,7 +30,7 @@
             "program": "${file}",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
             "args": ["--use_logfile"]
         },
 
