@@ -15,6 +15,16 @@
             "args": ["--help"]
         },
         {
+            "name": "Version",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}",
+            "args": ["--version"]
+        },
+       {
             "name": "Start",
             "type": "python",
             "request": "launch",
@@ -24,14 +34,14 @@
             "justMyCode": true,
         },
         {
-            "name": "Start with logfile",
+            "name": "Start with logfile and output path",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--use_logfile"]
+            "args": ["--use_logfile","--path","/Users/developer/cpm"]
         },
 
 

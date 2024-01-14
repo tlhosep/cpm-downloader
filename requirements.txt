@@ -6,3 +6,4 @@ pylint
 pyserial
 playsound
 pyobjc
+pathlib3x

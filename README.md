@@ -25,7 +25,7 @@ The format to be send over the line:
 ```
 <Bytes….>
 >>>+++STOP+++<<<
-Filename | quit
+Filename | quit | #_<folder>
 <<<+++GO+++>>>
 <Bytes…>
 ```
@@ -45,9 +45,10 @@ Prepare the aux device to use 9600, 8N1 as the default setup
 Then on the server issue these commands:
 
 ```
-pip aux:=<filename.ext>[O],Stop.sep
+pip aux:=<filename.ext>[O]
+pip aux:=Stop.sep[U0R]
 pip aux:=con:
-pip aux:=go.sep
+pip aux:=go.sep[U0R]
 ```
 
 ### Stop the transfer
@@ -56,6 +57,15 @@ In order to stop the transfer just pip the stop.sep twice and then enter quit (l
 ```
 pip aux:=go.sep
 ```
+
+### Change to subdirectory
+```
+>>>+++STOP+++<<<
+#_G01
+<<<+++GO+++>>>
+<Bytes…>
+```
+This sequence will generate the subfolder G01 and use this for subsequent file-storages
 
 ### Automated approach using Sub
 write this script on CP/M end: and call it trans.sub
@@ -69,7 +79,8 @@ pip aux:=GO.SEP
 ## Client
 On client end we have to implement a small python application to read the byes from the provided serial port until the stop sequence could be found.
 
-* If found, read the filename or quit command while waiting for the go separator.
+* If found, read the filename or quit command while waiting for the go separator. We will also check for the command to change the subdirectory
 * If quit had been detected, discard the buffer, close the line and return to the comandline
+* If a command to create a subdirectory had been found, create it and use this to store the files
 * If a filename had been detected: Write the buffer into the to be created filename. If the file already exists issue an error and discard the buffer.
 
