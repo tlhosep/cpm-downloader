@@ -19,6 +19,15 @@ CTS pin	5  -|  |         |   |- pin 5 CTS
 DCD pin	8  ----|         |----- pin 8 DCD
 ```
 
+## MacOS
+If you try to run the app on MacOs, the following library has to be installed:
+```
+pip3 install pyObjC`
+```
+If not, the sound could not be played...
+
+The module is no longer part of the requirements.txt as that hinders the build pipeline from working.
+
 ## Protocol
 The format to be send over the line:
 
