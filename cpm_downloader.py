@@ -124,7 +124,7 @@ class Command():
                     ser_content=ser.read_until(stop_sep)
                     ser_content=ser_content[:-len(stop_sep)]
                     ser_filename=ser.read_until(go_sep)
-                    ser_filename=ser_filename[:-len(go_sep)].decode('ascii').lower() #cut seperator
+                    ser_filename=ser_filename[:-len(go_sep)].decode('ascii').lower().strip() #cut seperator
                     if ser_filename == quit_cmd:
                         break
                     if ser_filename[0:2] == subfolder_cmd:
@@ -134,7 +134,7 @@ class Command():
                         logger.info("Path has been set to "+subfolder)
                         continue
                     try:
-                        ser_filename=ser_filename.strip()
+                        ser_filename=ser_filename
                         ser_path=os.path.join(subfolder,ser_filename)
                         with open(ser_path,'wb') as bin_file:
                             bin_file.write(ser_content)
