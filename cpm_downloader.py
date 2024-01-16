@@ -69,7 +69,7 @@ class Command():
         Main loop to process the commandline
 
         """
-      
+        fail_sound=None      
         if options['version']:
             print("The current version is: "+Command.get_git_version())
             return
@@ -146,9 +146,10 @@ class Command():
                         playsound.playsound(fail_sound)
                         break              
     
-        except (ValueError, serial.SerialException) as err:
+        except (ValueError, serial.SerialException, IOError) as err:
             logger.exception("I am sorry to inform you that the serial line could not be opened, cause: "+str(err))
             playsound.playsound(fail_sound)
+            return
  
         logger.info("Application terminated now")
         playsound.playsound(ok_sound)
