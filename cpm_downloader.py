@@ -80,6 +80,12 @@ class Command():
         ser_device=options['device']
         ser_baud=options['baud']
         file_path=options['path']
+        try:
+            Path(file_path).mkdir(parents=True, exist_ok=True)
+        except Exception as err:
+            logger.exception("path " +file_path+" could not be made: "+str(ferr))
+            return
+
         current_path = os.path.dirname(os.path.abspath(sys.argv[0]))
         stop_sep=b'>>>+++STOP+++<<<'
         go_sep=b'<<<+++GO+++>>>'
