@@ -9,8 +9,8 @@ To transfer files from the other PC back to here needs only a serial line connec
 the ability to setup an aux interface to transfer some data over it. Something like this:
 
 ```
-TxD pin	2  -------/----------- pin 2 TxD
-RxD pin	3  -------/----------- pin 3 RxD
+TxD pin	2  -------\/----------- pin 2 TxD
+RxD pin	3  -------/\----------- pin 3 RxD
 GND pin	7  -------------------- pin 7 GND
 DTR pin	20 ----|         |----- pin 20 DTR
 DSR pin	6  ----|         |----- pin 6 DSR
@@ -18,6 +18,18 @@ RTS pin	4  -|  |         |   |- pin 4 RTS
 CTS pin	5  -|  |         |   |- pin 5 CTS
 DCD pin	8  ----|         |----- pin 8 DCD
 ```
+Or better with crossed rts/cts for a hardware protocol like this (RTS/CTS enabled by default):
+```
+TxD pin	2  -------\/----------- pin 2 TxD
+RxD pin	3  -------/\----------- pin 3 RxD
+GND pin	7  -------------------- pin 7 GND
+DTR pin	20 ----|         |----- pin 20 DTR
+DSR pin	6  ----|         |----- pin 6 DSR
+RTS pin	4  ----|--\/-----|----- pin 4 RTS
+CTS pin	5  ----|--/\-----|----- pin 5 CTS
+DCD pin	8  ----|         |----- pin 8 DCD
+```
+
 
 ## MacOS
 If you try to run the app on MacOs, the following library has to be installed:
