@@ -93,3 +93,42 @@ On client end we have to implement a small python application to read the byes f
 * If a command to create a subdirectory had been found, create it and use this to store the files
 * If a filename had been detected: Write the buffer into the to be created filename. If the file already exists issue an error and discard the buffer.
 
+# CP/M directory listing comparer
+cpm_dirlistcompare.py
+
+Compare 2 files, generated via 
+
+```
+put console file list.lst
+dir [drive=(f,g,h),NOOAGE,FULL,USER=ALL]
+
+The structure of the file has to look like this:
+
+Scanning Directory...
+
+Sorting  Directory...
+
+Directory For Drive F:  User  0
+
+    Name     Bytes   Recs   Attributes      Name     Bytes   Recs   Attributes 
+------------ ------ ------ ------------ ------------ ------ ------ ------------
+ALLFILES LST     0k      0 Dir RW       CCP      COM     4k     25 Sys RW      
+
+Total Bytes     =    540k  Total Records =    3104  Files Found =   63
+Total 1k Blocks =    421   Used/Max Dir Entries For Drive F:  583/2048
+
+
+Directory For Drive F:  User  1
+
+```
+And list all files not contained in file 2 in the following way:
+
+```
+ H02_CCPZ802.REL
+
+ <Drive-Letter><User>_<file>.<extension>
+```
+Major command-line parameter:
+```
+ --file1 <Full path to file> --file2 <Full path to file>
+```

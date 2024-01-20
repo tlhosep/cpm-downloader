@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
 
+
         {
             "name": "Hilfe",
             "type": "python",
@@ -44,6 +45,16 @@
             "justMyCode": true,
             "args": ["--use_logfile","--path","/Users/developer/cpm"]
         },
-        
+        {
+            "name": "File CompStart with 2 files",
+            "type": "python",
+            "request": "launch",
+            "program": "cpm_dirlistcompare.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["--file1","/Users/developer/cpm/_allfiles.lst","--file2","/Users/developer/cpm/_filesmac.lst"]
+        },
+
     ]
 }
