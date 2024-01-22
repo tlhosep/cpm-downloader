@@ -12,14 +12,13 @@ Created on 12.01.2024
 @author: th.lueth@tlc-it-consulting.com
 '''
 import os
+import sys
 import logging
 import argparse
-import serial
-import playsound
-import sys
 from subprocess import run
 from pathlib import Path
-
+import serial
+import playsound
 
 logger = logging.getLogger(__name__)
 
@@ -37,9 +36,10 @@ class Command():
 
         :param parser: commandline parser
         '''
-        parser.add_argument('--baud', help="Set the baudrate", type=int,choices=[300,600,1200,2400,4800,9600,19200],
+        parser.add_argument('--baud', help="Set the baudrate", type=int,
+                            choices=[300,600,1200,2400,4800,9600,19200],
                             required=False, action='store', default=19200)
-        parser.add_argument('--loglevel', help="Define the logging level, the higher the less", 
+        parser.add_argument('--loglevel', help="Define the logging level, the higher the less",
                             type=int, choices=[0,10,20,30,40,50], default=20)
         parser.add_argument('--version', help="Returns current git version and terminates",
                             required=False, action='store_true')
@@ -50,7 +50,7 @@ class Command():
                             required=False, action='store')
         parser.add_argument('--path', help="Output path", default=".",
                             required=False, action='store')
- 
+
     @staticmethod
     def get_git_version():
         '''
@@ -58,7 +58,7 @@ class Command():
         :returns: Version as string, eg. 0.1.0-97-g1d18af9 or empty in case of error
         '''
         completed_process=run(['git','--no-pager', 'describe', '--tags', '--always'],
-               capture_output=True)
+               capture_output=True, check=False)
         if completed_process.returncode != 0:
             return ""
         return completed_process.stdout.decode('utf-8')
@@ -69,21 +69,20 @@ class Command():
         Main loop to process the commandline
 
         """
-        fail_sound=None      
+        fail_sound=None
         if options['version']:
             print("The current version is: "+Command.get_git_version())
             return
-        
+
         #: Location for logfiles
-        
         log_level=options['loglevel']
         ser_device=options['device']
         ser_baud=options['baud']
         file_path=options['path']
         try:
             Path(file_path).mkdir(parents=True, exist_ok=True)
-        except Exception as err:
-            logger.exception("path " +file_path+" could not be made: "+str(err))
+        except OSError as err:
+            logger.exception("path %s could not be made: %s",file_path,str(err))
             return
 
         current_path = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -117,9 +116,9 @@ class Command():
                                 '%(levelname)-8s;%(message)s'
                                 )
         logger.info("Starting the app now")
-        logger.info("Logging to"+": "+str(log_file)+" "+"at level"+": "+str(log_level))
-        logger.info("File storage: "+file_path)
-        logger.info("Connecting to the serial port "+ser_device)
+        logger.info("Logging to:%s  at level: %s",str(log_file),str(log_level))
+        logger.info("File storage: %s",file_path)
+        logger.info("Connecting to the serial port %s",ser_device)
         try:
             with serial.Serial(ser_device, ser_baud, rtscts=1) as ser:
                 if ser.is_open:
@@ -130,33 +129,35 @@ class Command():
                     ser_content=ser.read_until(stop_sep)
                     ser_content=ser_content[:-len(stop_sep)]
                     ser_filename=ser.read_until(go_sep)
-                    ser_filename=ser_filename[:-len(go_sep)].decode('ascii').lower().strip() #cut seperator
+                    ser_filename=ser_filename[:-len(go_sep)].decode('ascii').\
+                        lower().strip() #cut seperator
                     if ser_filename == quit_cmd:
                         break
                     if ser_filename[0:2] == subfolder_cmd:
                         subfoldername=ser_filename[2:].strip()
                         subfolder=os.path.join(file_path,subfoldername)
                         Path(subfolder).mkdir(parents=True, exist_ok=True)
-                        logger.info("Path has been set to "+subfolder)
+                        logger.info("Path has been set to %s",subfolder)
                         continue
                     try:
-                        ser_filename=ser_filename
                         ser_path=os.path.join(subfolder,ser_filename)
                         with open(ser_path,'wb') as bin_file:
                             bin_file.write(ser_content)
-                        logger.info(str(len(ser_content))+" Bytes now written to: "+ser_filename+" onfolder "+subfolder)
+                        logger.info(str(len(ser_content))+" Bytes now written to: "+\
+                            ser_filename+" onfolder "+subfolder)
                         #playsound.playsound(ok_sound)
 
                     except (IOError, OSError) as ferr:
-                        logger.exception("file " +ser_path+" could not be written: "+str(ferr))
+                        logger.exception("file %s could not be written: %s",ser_path,str(ferr))
                         playsound.playsound(fail_sound)
-                        break              
-    
+                        break
+
         except (ValueError, serial.SerialException, IOError) as err:
-            logger.exception("I am sorry to inform you that the serial line could not be opened, cause: "+str(err))
+            logger.exception("I am sorry to inform you that the serial line could not be opened,"\
+                " cause: %s",str(err))
             playsound.playsound(fail_sound)
             return
- 
+
         logger.info("Application terminated now")
         playsound.playsound(ok_sound)
 def main():

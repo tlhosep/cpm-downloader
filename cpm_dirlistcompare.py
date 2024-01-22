@@ -31,21 +31,21 @@ Created on 19.01.2024
 import os
 import logging
 import argparse
-import serial
-import playsound
 import sys
 import re
 from subprocess import run
-from pathlib import Path
 
 
 logger = logging.getLogger(__name__)
 
 class DirFileState:
+    """States for statemachine
+    """
     def __init__(self, action):
         self.action = action
-    def __str__(self): return self.action
-     # in order to make this class usable as a
+    def __str__(self):
+        return self.action
+    # in order to make this class usable as a
     # dictionary key:
     def __hash__(self):
         return hash(self.action)
@@ -64,7 +64,7 @@ class Command():
 
         :param parser: commandline parser
         '''
-        parser.add_argument('--loglevel', help="Define the logging level, the higher the less", 
+        parser.add_argument('--loglevel', help="Define the logging level, the higher the less",
                             type=int, choices=[0,10,20,30,40,50], default=20)
         parser.add_argument('--version', help="Returns current git version and terminates",
                             required=False, action='store_true')
@@ -75,7 +75,7 @@ class Command():
                             required=True, action='store')
         parser.add_argument('--file2', help="Second file to compare", default="",
                             required=True, action='store')
-    @staticmethod 
+    @staticmethod
     def extract_file(filename, indicator=None):
         """Extract the dir-entries from given file
 
@@ -85,21 +85,22 @@ class Command():
 
         Returns:
             list: List of filenames; <Drive><User>_<filename>_<Indicator for File>
-        """        
+        """
+        # pylint: disable = W1401
         DirFileState.start=DirFileState("start")
         dir_string_regex=re.compile("Directory For Drive (\S):  User \s+(\d)")
         DirFileState.dirheader=DirFileState("header")
         dir_list_start="------------ ------ ------"
         DirFileState.dirlist=DirFileState("dirlist")
-        "ALLFILES LST     0k      0 Dir RW       CCP      COM     4k     25 Sys RW      "
+        # "ALLFILES LST     0k      0 Dir RW       CCP      COM     4k     25 Sys RW      "
         # 1=fil, 2=filsub, 3=sizek, 4= blocks, 5=attrs (12 char)
         dir_list_files_regex=re.compile("((\S+)\s+(\S+)\s+(\d+)k\s+(\d+) (.{12})\s*)")
         empty_line_regex=re.compile("^\s*$")
         filelist=[]
         try:
             state=DirFileState.start
-            with open(filename,"r") as f1:
-                while True: 
+            with open(filename,"r",encoding='ascii') as f1:
+                while True:
                     line=f1.readline()
                     if len(line)==0:
                         #end of file indicator
@@ -109,7 +110,7 @@ class Command():
                         continue
                     if state==DirFileState.start:
                         matches=dir_string_regex.match(line)
-                        if matches==None:
+                        if matches is None:
                             continue #read next line
                         drive=matches.group(1)
                         user=f'{int(matches.group(2)):02d}'
@@ -126,14 +127,16 @@ class Command():
                             state=DirFileState.start
                             continue
                         else:
-                            for ngroup in range(len(matches)):
-                                dirfilename=drive+str(user)+"_"+matches[ngroup][1]+"."+matches[ngroup][2]
+                            for ngroup in enumerate(matches):
+                                dirfilename=drive+str(user)+"_"+\
+                                    matches[ngroup][1]+"."+matches[ngroup][2]
                                 if indicator is not None:
                                     dirfilename=dirfilename+"_"+indicator
                                 filelist.append(dirfilename)
-                    
+
         except (OSError, IOError) as err:
-            logger.exception("I am sorry to inform you that the file could not be opened, cause: "+str(err))
+            logger.exception("I am sorry to inform you that the file could not be opened,"+\
+                " cause: %s", str(err))
             return None
         return filelist
 
@@ -144,7 +147,7 @@ class Command():
         :returns: Version as string, eg. 0.1.0-97-g1d18af9 or empty in case of error
         '''
         completed_process=run(['git','--no-pager', 'describe', '--tags', '--always'],
-               capture_output=True)
+               capture_output=True, check=False)
         if completed_process.returncode != 0:
             return ""
         return completed_process.stdout.decode('utf-8')
@@ -187,17 +190,19 @@ class Command():
                                 '%(levelname)-8s;%(message)s'
                                 )
         logger.info("Starting the app now")
-        logger.info("Logging to"+": "+str(log_file)+" "+"at level"+": "+str(log_level))
+        logger.info("Logging to %s at level: %s",str(log_file),str(log_level))
         filelist1=Command.extract_file(file1)
         filelist2=Command.extract_file(file2)
         targetlist=[]
         #next check filelist2 for missing entries and report them
         for filename in filelist1:
             if filename not in filelist2:
-                if filename[0:3] not in ["F02","F04","F05","F06","F07","F08","F09","F11","F13","F14",
-                                        "F15","G07","G08","G09","G10","G11","H01","H03","H04","H07"] and \
+                if filename[0:3] not in ["F02","F04","F05","F06","F07","F08","F09","F11",
+                                         "F13","F14",
+                                        "F15","G07","G08","G09","G10","G11","H01","H03",
+                                        "H04","H07"] and \
                     filename[-3:] not in ["BAK","BAD","TRK","$$$","SEP"]:
-                   targetlist.append(filename) 
+                    targetlist.append(filename)
 
         print("\nResults\n")
         for name in targetlist:
