@@ -6,4 +6,3 @@ pyserial
 playsound
 pathlib3x
 pytest
-re
