@@ -12,13 +12,14 @@ cache:
   paths:
     - .cache/pip
 
-before_script:
-  - python --version ; pip --version  # For debugging
-  - pip install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
-  - pip install -r requirements.txt
-  - pip install --upgrade pip
+.before_script_template:
+  before_script:
+    - python --version ; pip --version  # For debugging
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+    - pip install -r requirements.txt
+    - pip install --upgrade pip
 
 # 2 stages linting and test before we are generating a release
 stages:
@@ -60,11 +61,13 @@ release_job:
             url: "https://$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG/$CI_COMMIT_SHA"
 
 linting:
+    extends: .before_script_template
     stage: lint
     script:
         - pylint --fail-under=8.0 --ignore=test*.py --errors-only --disable=C,R *.py
 
 unittest:
+    extends: .before_script_template
     stage: test
     script:
         - python3 -m unittest discover -p test_*.py
