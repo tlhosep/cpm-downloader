@@ -3,3 +3,4 @@ bin/
 pydevd_attach_to_process/
 lib/
 __pycache__
+.cache/

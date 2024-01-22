@@ -194,9 +194,9 @@ class Command():
         #next check filelist2 for missing entries and report them
         for filename in filelist1:
             if filename not in filelist2:
-                if filename[0:3] not in ["F02","F04","F06","F07","F08","F09","F11","F13","F14",
+                if filename[0:3] not in ["F02","F04","F05","F06","F07","F08","F09","F11","F13","F14",
                                         "F15","G07","G08","G09","G10","G11","H01","H03","H04","H07"] and \
-                    filename[-3:] != "BAK":
+                    filename[-3:] not in ["BAK","BAD","TRK","$$$","SEP"]:
                    targetlist.append(filename) 
 
         print("\nResults\n")
