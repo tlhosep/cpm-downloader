@@ -83,7 +83,7 @@ class Command():
         try:
             Path(file_path).mkdir(parents=True, exist_ok=True)
         except Exception as err:
-            logger.exception("path " +file_path+" could not be made: "+str(ferr))
+            logger.exception("path " +file_path+" could not be made: "+str(err))
             return
 
         current_path = os.path.dirname(os.path.abspath(sys.argv[0]))

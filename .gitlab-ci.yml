@@ -14,11 +14,11 @@ cache:
 
 before_script:
   - python --version ; pip --version  # For debugging
-  - pip install --upgrade pip
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
   - pip install -r requirements.txt
+  - pip install --upgrade pip
 
 # 2 stages linting and test before we are generating a release
 stages:
