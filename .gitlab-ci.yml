@@ -30,7 +30,7 @@ prepare_job:
     stage: prepare
     image: alpine:latest
     rules:
-    - if '$CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+$/'
+    - if: '$CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+$/'
     script:
       - apk add curl jq
       - 'curl -H "PRIVATE-TOKEN: $CI_API_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT/repository/changelog?version=$CI_COMMIT_TAG" | jq -r .notesd > release_notes.md'
@@ -45,7 +45,7 @@ release_job:
     needs:
       - job: prepare_job
     rules:
-    - if '$CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+$/'
+    - if: '$CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+$/'
     script:
       - echo "Creating release"
     release:
