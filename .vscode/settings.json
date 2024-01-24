@@ -17,4 +17,12 @@
     ],
     "covpyhighlighter.coverageFilePath": "/Users/developer/git/cpm-downloader",
     "python.defaultInterpreterPath": "./.venv/bin/python3",
+    "commit-message-editor.staticTemplate": [
+        "feat: Short description",
+        "",
+        "Message body",
+        "",
+        "#Changelog: added, fixed, changed, deprecated, removed, security, performance, other",
+        "#Changelog:"
+    ],
 }
