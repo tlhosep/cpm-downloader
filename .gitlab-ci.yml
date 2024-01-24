@@ -41,7 +41,7 @@ prepare_job:
       - cat release_notes.md
     artifacts:
       paths:
-      - release_notes.md
+        - "release_notes.md"
 
 release_job:
     stage: release
@@ -66,9 +66,15 @@ linting:
     extends: .before_script_template
     stage: lint
     script:
-        - pylint --fail-under=8.0 --ignore=test_*.py --errors-only --disable=C,R *.py
+        - pylint --fail-under=8 --fail-on=E --ignore=test_*.py --errors-only --disable=C,R --output=pylint.txt *.py
     except:
       - tags
+    artifacts:
+      untracked: false
+      when: on_failure
+      expire_in: 30 days
+      paths:
+        - "pylint.txt"
 
 unittest:
     extends: .before_script_template
