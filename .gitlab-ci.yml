@@ -74,6 +74,6 @@ unittest:
     extends: .before_script_template
     stage: test
     script:
-        - python3 -m unittest discover -p test_*.py
+        - python3 pytest tests
     except:
       - tags
