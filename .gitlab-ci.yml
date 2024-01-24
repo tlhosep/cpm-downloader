@@ -71,7 +71,7 @@ linting:
       - tags
     artifacts:
       untracked: false
-      when: on_failure
+      when: always
       expire_in: 30 days
       paths:
         - "pylint.txt"
