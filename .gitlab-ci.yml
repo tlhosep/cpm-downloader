@@ -66,7 +66,7 @@ linting:
     extends: .before_script_template
     stage: lint
     script:
-        - pylint --fail-under=8.0 --ignore=test*.py --errors-only --disable=C,R *.py
+        - pylint --fail-under=8.0 --ignore=test_*.py --errors-only --disable=C,R *.py
     except:
       - tags
 
@@ -74,6 +74,6 @@ unittest:
     extends: .before_script_template
     stage: test
     script:
-        - python3 pytest tests
+        - python3 .venv/lib/python3.9/site-packages/pytest tests
     except:
       - tags
