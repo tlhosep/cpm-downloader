@@ -66,7 +66,8 @@ linting:
     extends: .before_script_template
     stage: lint
     script:
-        - pylint --fail-under=8 --fail-on=E --ignore=test_*.py --errors-only --disable=C,R --output=pylint.txt *.py
+        - pylint --fail-under=8 --fail-on=E --ignore=test_*.py --output=pylint.txt *.py
+        - cat pylint.txt
     except:
       - tags
     artifacts:
