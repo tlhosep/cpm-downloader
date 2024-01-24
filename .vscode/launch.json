@@ -55,6 +55,19 @@
             "justMyCode": true,
             "args": ["--file1","/Users/developer/cpm/_allfiles.lst","--file2","/Users/developer/cpm/_filesmac.lst"]
         },
+        {
+            "name": "Python: Debug Tests",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "purpose": ["debug-test"],
+            "console": "integratedTerminal",
+            "env": {
+                "PYTEST_ADDOPTS": "--no-cov"
+            },
+            "justMyCode": false
+        },
+
 
     ]
 }

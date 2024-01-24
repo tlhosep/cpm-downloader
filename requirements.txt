@@ -6,3 +6,4 @@ pyserial
 playsound
 pathlib3x
 pytest
+pytest-cov

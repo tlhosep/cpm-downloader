@@ -67,9 +67,13 @@ linting:
     stage: lint
     script:
         - pylint --fail-under=8.0 --ignore=test*.py --errors-only --disable=C,R *.py
+    except:
+      - tags
 
 unittest:
     extends: .before_script_template
     stage: test
     script:
         - python3 -m unittest discover -p test_*.py
+    except:
+      - tags
