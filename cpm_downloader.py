@@ -15,10 +15,10 @@ import os
 import sys
 import logging
 import argparse
-from subprocess import run
 from pathlib import Path
 import serial
 import playsound
+from tlu_utils import get_git_version
 
 logger = logging.getLogger(__name__)
 
@@ -51,17 +51,6 @@ class Command():
         parser.add_argument('--path', help="Output path", default=".",
                             required=False, action='store')
 
-    @staticmethod
-    def get_git_version():
-        '''
-        retrieve the current git provided version, based on the latest tag
-        :returns: Version as string, eg. 0.1.0-97-g1d18af9 or empty in case of error
-        '''
-        completed_process=run(['git','--no-pager', 'describe', '--tags', '--always'],
-               capture_output=True, check=False)
-        if completed_process.returncode != 0:
-            return ""
-        return completed_process.stdout.decode('utf-8')
 
     @staticmethod
     def handle(*args, **options):  # @UnusedVariable pylint: disable=unused-argument
@@ -71,7 +60,7 @@ class Command():
         """
         fail_sound=None
         if options['version']:
-            print("The current version is: "+Command.get_git_version())
+            print("The current version is: "+get_git_version())
             return
 
         #: Location for logfiles

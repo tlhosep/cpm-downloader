@@ -33,7 +33,7 @@ import logging
 import argparse
 import sys
 import re
-from subprocess import run
+from tlu_utils import get_git_version
 
 
 logger = logging.getLogger(__name__)
@@ -141,25 +141,13 @@ class Command():
         return filelist
 
     @staticmethod
-    def get_git_version():
-        '''
-        retrieve the current git provided version, based on the latest tag
-        :returns: Version as string, eg. 0.1.0-97-g1d18af9 or empty in case of error
-        '''
-        completed_process=run(['git','--no-pager', 'describe', '--tags', '--always'],
-               capture_output=True, check=False)
-        if completed_process.returncode != 0:
-            return ""
-        return completed_process.stdout.decode('utf-8')
-
-    @staticmethod
     def handle(*args, **options):  # @UnusedVariable pylint: disable=unused-argument
         """
         Main loop to process the commandline
 
         """
         if options['version']:
-            print("The current version is: "+Command.get_git_version())
+            print("The current version is: "+get_git_version())
             return
         log_level=options['loglevel']
         filename1=options['file1']
