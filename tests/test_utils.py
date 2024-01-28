@@ -16,11 +16,10 @@ Code
 """
 
 import unittest
-import argparse
 from unittest.mock import MagicMock
 from unittest import mock
-import pytest
-from tlu_utils import get_git_version
+# import pytest
+from tlu_utils import get_git_version, add_parser_log_args, cmdline_main
 
 class TestUtils(unittest.TestCase):
     '''
@@ -39,7 +38,7 @@ class TestUtils(unittest.TestCase):
         mock_run.return_value=process
         git_version=get_git_version()
         self.assertEqual(git_version,"1.2.3")
-        mock_run.assert_called_once()        
+        mock_run.assert_called_once()
 
     @mock.patch('tlu_utils.run')
     def test_version_err(self,mock_run):
@@ -54,4 +53,36 @@ class TestUtils(unittest.TestCase):
         git_version=get_git_version()
         self.assertEqual(git_version,"")
         mock_run.assert_called_once()
-        process.stdout.decode.assert_not_called()     
+        process.stdout.decode.assert_not_called()
+
+    def test_add_parser(self):
+        """Test to add some lines to a parser
+        """
+        parser=MagicMock()
+        parser.add_argument=MagicMock()
+        add_parser_log_args(parser)
+        parser.add_argument.assert_called()
+
+    @mock.patch('tlu_utils.argparse')
+    def test_execute_main(self,mock_arg):
+        """Test to check cmdline_main
+
+        Args:
+            mock_argparse (MagicMock): argparse function
+        """
+        class ArgsClass:
+            """Testclass for commandhandler
+            used with vars un the tested function
+            """
+            def __init__(self) -> None:
+                self.args = "args"
+                self.arg1 = "arg1"
+
+        parser=MagicMock()
+        args=ArgsClass()
+        parser.parse_args=MagicMock(return_value=args)
+        mock_arg.ArgumentParser=MagicMock(return_value=parser)
+        cmd=MagicMock()
+        cmd.handle=MagicMock()
+        cmdline_main(cmd)
+        cmd.handle.assert_called_once_with('a', 'r', 'g', 's', arg1='arg1')

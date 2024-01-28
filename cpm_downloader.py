@@ -14,11 +14,10 @@ Created on 12.01.2024
 import os
 import sys
 import logging
-import argparse
 from pathlib import Path
 import serial
 import playsound
-from tlu_utils import get_git_version
+from tlu_utils import get_git_version,add_parser_log_args,cmdline_main
 
 logger = logging.getLogger(__name__)
 
@@ -36,16 +35,10 @@ class Command():
 
         :param parser: commandline parser
         '''
+        add_parser_log_args(parser)
         parser.add_argument('--baud', help="Set the baudrate", type=int,
                             choices=[300,600,1200,2400,4800,9600,19200],
                             required=False, action='store', default=19200)
-        parser.add_argument('--loglevel', help="Define the logging level, the higher the less",
-                            type=int, choices=[0,10,20,30,40,50], default=20)
-        parser.add_argument('--version', help="Returns current git version and terminates",
-                            required=False, action='store_true')
-        parser.add_argument('--use_logfile', help=
-                            "Logs various messages into logfile and messages on screen",
-                            required=False, action='store_true')
         parser.add_argument('--device', help="Serial device", default="/dev/cu.usbserial-143230",
                             required=False, action='store')
         parser.add_argument('--path', help="Output path", default=".",
@@ -155,16 +148,7 @@ def main():
 
     '''
     cmd = Command()
-    # Define parser and determine help
-    parser = argparse.ArgumentParser(description=cmd.help)
-
-    # Add now commandline args to be checked
-    cmd.add_arguments(parser)
-    options = parser.parse_args()
-    cmd_options = vars(options)
-    # Move positional args out of options to mimic legacy optparse
-    args = cmd_options.pop('args', ())
-    cmd.handle(*args,**cmd_options)
+    cmdline_main(cmd)
 
 if __name__ == "__main__":
     main()

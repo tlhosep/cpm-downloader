@@ -30,10 +30,9 @@ Created on 19.01.2024
 '''
 import os
 import logging
-import argparse
 import sys
 import re
-from tlu_utils import get_git_version
+from tlu_utils import get_git_version,add_parser_log_args,cmdline_main,configure_logging
 
 
 logger = logging.getLogger(__name__)
@@ -45,11 +44,6 @@ class DirFileState:
         self.action = action
     def __str__(self):
         return self.action
-    # in order to make this class usable as a
-    # dictionary key:
-    def __hash__(self):
-        return hash(self.action)
-
 
 class Command():
     """
@@ -64,17 +58,11 @@ class Command():
 
         :param parser: commandline parser
         '''
-        parser.add_argument('--loglevel', help="Define the logging level, the higher the less",
-                            type=int, choices=[0,10,20,30,40,50], default=20)
-        parser.add_argument('--version', help="Returns current git version and terminates",
-                            required=False, action='store_true')
-        parser.add_argument('--use_logfile', help=
-                            "Logs various messages into logfile and messages on screen",
-                            required=False, action='store_true')
+        add_parser_log_args(parser)
         parser.add_argument('--file1', help="First file to compare", default="",
-                            required=True, action='store')
+                            required=False, action='store')
         parser.add_argument('--file2', help="Second file to compare", default="",
-                            required=True, action='store')
+                            required=False, action='store')
     @staticmethod
     def extract_file(filename, indicator=None):
         """Extract the dir-entries from given file
@@ -129,7 +117,7 @@ class Command():
                         else:
                             for ngroup in enumerate(matches):
                                 dirfilename=drive+str(user)+"_"+\
-                                    matches[ngroup][1]+"."+matches[ngroup][2]
+                                    ngroup[1][1]+"."+ngroup[1][2]
                                 if indicator is not None:
                                     dirfilename=dirfilename+"_"+indicator
                                 filelist.append(dirfilename)
@@ -152,33 +140,19 @@ class Command():
         log_level=options['loglevel']
         filename1=options['file1']
         filename2=options['file2']
+        if (len(filename1)<1 or len(filename2)<1):
+            print("You have to provide the two filenames that should be compared,"\
+                " use --help for more info")
+            return
         current_path = os.path.dirname(os.path.abspath(sys.argv[0]))
         log_file=os.path.join(current_path,"log","cpm_downloader.log")
         file1=os.path.join(current_path,filename1)
         file2=os.path.join(current_path,filename2)
         use_logfile=options['use_logfile']
-        if use_logfile:
-            #define filehandler first
-            logging.basicConfig(filename=log_file, level=log_level,
-                                format='%(asctime)s;%(filename)-16.16s;%(lineno)04d;'+\
-                                '%(levelname)-8s;%(message)s'
-                                )
-            # define a Handler which writes INFO messages or higher to the sys.stderr
-            console = logging.StreamHandler()
-             # set a format which is simpler for console use
-            formatter = logging.Formatter('%(levelname)-8s %(message)s')
-            # tell the handler to use this format
-            console.setFormatter(formatter)
-            # add the handler to the root logger
-            logging.getLogger().addHandler(console)
-        else:
-            #log to console only
-            logging.basicConfig(level=log_level,
-                                format='%(asctime)s;%(filename)-16.16s;%(lineno)04d;'+\
-                                '%(levelname)-8s;%(message)s'
-                                )
+        configure_logging(use_logfile,logger,log_file,log_level)
         logger.info("Starting the app now")
-        logger.info("Logging to %s at level: %s",str(log_file),str(log_level))
+        if use_logfile:
+            logger.info("Logging to %s at level: %s",str(log_file),str(log_level))
         filelist1=Command.extract_file(file1)
         filelist2=Command.extract_file(file2)
         targetlist=[]
@@ -202,16 +176,7 @@ def main():
 
     '''
     cmd = Command()
-    # Define parser and determine help
-    parser = argparse.ArgumentParser(description=cmd.help)
-
-    # Add now commandline args to be checked
-    cmd.add_arguments(parser)
-    options = parser.parse_args()
-    cmd_options = vars(options)
-    # Move positional args out of options to mimic legacy optparse
-    args = cmd_options.pop('args', ())
-    cmd.handle(*args,**cmd_options)
+    cmdline_main(cmd)
 
 if __name__ == "__main__":
     main()
