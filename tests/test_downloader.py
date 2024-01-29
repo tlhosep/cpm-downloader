@@ -84,7 +84,7 @@ class TestDownloader(unittest.TestCase):
         ser_line=MagicMock()
         ser_line.side_effect = IOError()
         mock_ser.side_effect=ser_line
-        mock_ser.__enter__=MagicMock()
+        mock_ser.__enter__=MagicMock(return_value=ser_line)
         mock_ser.__exit__=MagicMock()
         mock_logger.exception=MagicMock()
         mock_logger.info=MagicMock()
@@ -93,3 +93,31 @@ class TestDownloader(unittest.TestCase):
         mock_sound.assert_called_once()
         mock_logger.exception.assert_called_once()
         mock_logger.info.assert_called()
+
+
+    @mock.patch('cpm_downloader.serial')
+    @mock.patch('playsound.playsound')
+    @mock.patch('cpm_downloader.logger')
+    @mock.patch('cpm_downloader.Path')
+    def test_serial_open(self,mock_path, mock_logger,mock_sound,mock_ser):
+        """Test with open serial device: change dir and quit
+        """
+        ser_line=MagicMock()
+        ser_line.is_open=True
+        ser_line.read_until=MagicMock(side_effect=[b'>>>+++STOP+++<<<',\
+            b'#_G1\n<<<+++GO+++>>>',b'>>>+++STOP+++<<<',b'QUIT<<<+++GO+++>>>'])
+        serial=MagicMock()
+        serial.return_value.__enter__.return_value=ser_line
+        serial.return_value.__exit__.return_value=MagicMock()
+        mock_ser.Serial=serial
+        mock_logger.exception=MagicMock()
+        mock_logger.info=MagicMock()
+        mock_logger.error=MagicMock()
+        mock_path.return_value.mkdir.return_value=MagicMock()
+        options = self.parser.parse_args([])
+        self.start_handler(options)
+        mock_sound.assert_called_once()
+        mock_logger.exception.assert_not_called()
+        mock_logger.info.assert_called()
+        mock_logger.error.assert_not_called()
+        mock_path.return_value.mkdir.assert_called()

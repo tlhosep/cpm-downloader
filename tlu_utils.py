@@ -64,7 +64,7 @@ def configure_logging(use_logfile,logging,log_file,log_level):
 
     Args:
         use_logfile (Bool): If true write a logfile
-        logging (Logger): Logger for the app = logging.getLogger(__name__)
+        logging (Class): Logging class, not the Logger
         log_file (str): full path and logfilename
         log_level (int): log level the higher the more severe
     """

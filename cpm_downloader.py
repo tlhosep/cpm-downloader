@@ -17,7 +17,7 @@ import logging
 from pathlib import Path
 import serial
 import playsound
-from tlu_utils import get_git_version,add_parser_log_args,cmdline_main
+from tlu_utils import get_git_version,add_parser_log_args,cmdline_main,configure_logging
 
 logger = logging.getLogger(__name__)
 
@@ -77,26 +77,7 @@ class Command():
         log_file=os.path.join(current_path,"log","cpm_downloader.log")
 
         use_logfile=options['use_logfile']
-        if use_logfile:
-            #define filehandler first
-            logging.basicConfig(filename=log_file, level=log_level,
-                                format='%(asctime)s;%(filename)-16.16s;%(lineno)04d;'+\
-                                '%(levelname)-8s;%(message)s'
-                                )
-            # define a Handler which writes INFO messages or higher to the sys.stderr
-            console = logging.StreamHandler()
-             # set a format which is simpler for console use
-            formatter = logging.Formatter('%(levelname)-8s %(message)s')
-            # tell the handler to use this format
-            console.setFormatter(formatter)
-            # add the handler to the root logger
-            logging.getLogger().addHandler(console)
-        else:
-            #log to console only
-            logging.basicConfig(level=log_level,
-                                format='%(asctime)s;%(filename)-16.16s;%(lineno)04d;'+\
-                                '%(levelname)-8s;%(message)s'
-                                )
+        configure_logging(use_logfile,logging, log_file, log_level)
         logger.info("Starting the app now")
         logger.info("Logging to:%s  at level: %s",str(log_file),str(log_level))
         logger.info("File storage: %s",file_path)
@@ -104,7 +85,11 @@ class Command():
         try:
             with serial.Serial(ser_device, ser_baud, rtscts=1) as ser:
                 if ser.is_open:
-                    logger.info("Serial line now open to accept reuests")
+                    logger.info("Serial line now open to accept requests")
+                else:
+                    logger.error("serial line could not be opened")
+                    playsound.playsound(fail_sound)
+                    return
                 logger.info("Application now in endless loop")
                 subfolder=file_path
                 while True:
@@ -150,5 +135,5 @@ def main():
     cmd = Command()
     cmdline_main(cmd)
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     main()

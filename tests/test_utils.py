@@ -19,7 +19,7 @@ import unittest
 from unittest.mock import MagicMock
 from unittest import mock
 # import pytest
-from tlu_utils import get_git_version, add_parser_log_args, cmdline_main
+from tlu_utils import get_git_version, add_parser_log_args, cmdline_main,configure_logging
 
 class TestUtils(unittest.TestCase):
     '''
@@ -86,3 +86,29 @@ class TestUtils(unittest.TestCase):
         cmd.handle=MagicMock()
         cmdline_main(cmd)
         cmd.handle.assert_called_once_with('a', 'r', 'g', 's', arg1='arg1')
+
+    def test_config_logging_no_file(self):
+        """Test config logging without a logfile
+        """
+        logging=MagicMock()
+        logging.basicConfig=MagicMock()
+        configure_logging(False,logging,"test.log",10)
+        logging.basicConfig.assert_called_once()
+
+    def test_config_logging_with_file(self):
+        """Test config logging with a logfile
+        """
+        logging=MagicMock()
+        logging.basicConfig=MagicMock()
+        console=MagicMock()
+        logging.StreamHandler=MagicMock(return_value=console)
+        formatter=MagicMock()
+        logging.Formatter=MagicMock(return_value=formatter)
+        console.setFormatter=MagicMock()
+        logger=MagicMock()
+        logger.addHandler=MagicMock()
+        logging.getLogger=MagicMock(return_value=logger)
+        configure_logging(True,logging,"test.log",10)
+        logging.basicConfig.assert_called_once()
+        console.setFormatter.assert_called_with(formatter)
+        logger.addHandler.assert_called_with(console)
