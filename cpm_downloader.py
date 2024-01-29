@@ -114,7 +114,7 @@ class Command():
                             ser_filename+" onfolder "+subfolder)
                         #playsound.playsound(ok_sound)
 
-                    except (IOError, OSError) as ferr:
+                    except (IOError, OSError, TypeError) as ferr:
                         logger.exception("file %s could not be written: %s",ser_path,str(ferr))
                         playsound.playsound(fail_sound)
                         break
