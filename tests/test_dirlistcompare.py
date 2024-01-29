@@ -20,7 +20,7 @@ import argparse
 from unittest.mock import MagicMock, mock_open
 from unittest import mock
 import pytest
-from cpm_dirlistcompare import Command, DirFileState
+from cpm_dirlistcompare import Command, DirFileState, main
 
 class TestDirlistCompare(unittest.TestCase):
     '''
@@ -157,3 +157,56 @@ class TestDirlistCompare(unittest.TestCase):
         self.start_handler(options)
         mock_print.assert_called()
         mock_logger.info.assert_called()
+
+    @mock.patch('cpm_dirlistcompare.logger')
+    def test_handler_one_filename(self,mock_logger):
+        """Test a run with one missing file
+        """
+        mock_logger.error=MagicMock()
+        options = self.parser.parse_args(["--file1", "file1", "--file2",""])
+        self.start_handler(options)
+        mock_logger.error.assert_called()
+
+
+    @mock.patch('cpm_dirlistcompare.logger')
+    @mock.patch('cpm_dirlistcompare.Command.extract_file')
+    @mock.patch('builtins.print')
+    def test_handler_one_read_failed(self,mock_print,mock_extract,mock_logging):
+        """Test a run with one failed extraction and logfile
+        """
+        mock_logging.error=MagicMock()
+        mock_logging.info=MagicMock()
+        mock_extract.side_effect=[None,["F00_A.F","F00_C.F"]]
+        options = self.parser.parse_args(["--file1", "file1", "--file2", "file2", "--use_logfile"])
+        self.start_handler(options)
+        mock_print.assert_not_called()
+        mock_logging.error.assert_called()
+        mock_logging.info.assert_called()
+
+
+    @mock.patch('cpm_dirlistcompare.logger')
+    @mock.patch('cpm_dirlistcompare.Command.extract_file')
+    @mock.patch('builtins.print')
+    def test_handler_with_excludes(self,mock_print,mock_extract,mock_logger):
+        """Test a normal run with excluded filenames
+        """
+        mock_logger.info=MagicMock()
+        mock_extract.side_effect=[["F00_A.F","F00_B.F","F04_X.LST","F00_X.BAK"],\
+            ["F00_A.F","F00_C.F"]]
+        options = self.parser.parse_args(["--file1", "file1", "--file2", "file2"])
+        self.start_handler(options)
+        mock_print.assert_called()
+        mock_logger.info.assert_called()
+
+    @mock.patch('cpm_dirlistcompare.Command')
+    @mock.patch('cpm_dirlistcompare.cmdline_main')
+    def test_main(self,mock_main,mock_cmd):
+        """Test the main function
+
+        Args:
+            mock_main (function): Mocked main-function from utils
+            mock_cmd (class): Mocked Command class
+        """
+        main()
+        mock_main.assert_called_once_with(mock_cmd())
+        mock_cmd.asser_called_one()

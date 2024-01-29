@@ -141,7 +141,7 @@ class Command():
         filename1=options['file1']
         filename2=options['file2']
         if (len(filename1)<1 or len(filename2)<1):
-            print("You have to provide the two filenames that should be compared,"\
+            logger.error("You have to provide the two filenames that should be compared,"\
                 " use --help for more info")
             return
         current_path = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -149,12 +149,15 @@ class Command():
         file1=os.path.join(current_path,filename1)
         file2=os.path.join(current_path,filename2)
         use_logfile=options['use_logfile']
-        configure_logging(use_logfile,logger,log_file,log_level)
+        configure_logging(use_logfile,logging,log_file,log_level)
         logger.info("Starting the app now")
         if use_logfile:
             logger.info("Logging to %s at level: %s",str(log_file),str(log_level))
         filelist1=Command.extract_file(file1)
         filelist2=Command.extract_file(file2)
+        if (filelist1 is None) or (filelist2 is None):
+            logger.error("There was a problem with one of the two files, app terminates.")
+            return
         targetlist=[]
         #next check filelist2 for missing entries and report them
         for filename in filelist1:
@@ -166,7 +169,8 @@ class Command():
                     filename[-3:] not in ["BAK","BAD","TRK","$$$","SEP"]:
                     targetlist.append(filename)
 
-        print("\nResults\n")
+        print("\nResults:")
+        print("========")
         for name in targetlist:
             print(name)
         logger.info("Application terminated now")
