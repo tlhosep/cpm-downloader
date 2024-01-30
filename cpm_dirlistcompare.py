@@ -37,7 +37,7 @@ from tlu_utils import get_git_version,add_parser_log_args,cmdline_main,configure
 
 logger = logging.getLogger(__name__)
 
-class DirFileState:
+class DirFileState:          # pylint: disable = too-few-public-methods (1/2)
     """States for statemachine
     """
     def __init__(self, action):
@@ -65,6 +65,7 @@ class Command():
                             required=False, action='store')
     @staticmethod
     def extract_file(filename, indicator=None):
+        # pylint disable = R0914, R0912 Too many local variables (16/15) / Too many branches (13/12)
         """Extract the dir-entries from given file
 
         Args:
@@ -114,13 +115,12 @@ class Command():
                             #end of list reached
                             state=DirFileState.start
                             continue
-                        else:
-                            for ngroup in enumerate(matches):
-                                dirfilename=drive+str(user)+"_"+\
-                                    ngroup[1][1]+"."+ngroup[1][2]
-                                if indicator is not None:
-                                    dirfilename=dirfilename+"_"+indicator
-                                filelist.append(dirfilename)
+                        for ngroup in enumerate(matches):
+                            dirfilename=drive+str(user)+"_"+\
+                                ngroup[1][1]+"."+ngroup[1][2]
+                            if indicator is not None:
+                                dirfilename=dirfilename+"_"+indicator
+                            filelist.append(dirfilename)
 
         except (OSError, IOError) as err:
             logger.exception("I am sorry to inform you that the file could not be opened,"+\

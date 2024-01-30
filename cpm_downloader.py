@@ -46,7 +46,8 @@ class Command():
 
 
     @staticmethod
-    def handle(*args, **options):  # @UnusedVariable pylint: disable=unused-argument
+    def handle(*args, **options):
+        # @UnusedVariable pylint: disable=unused-argument, too-many-locals, too-many-statements
         """
         Main loop to process the commandline
 
