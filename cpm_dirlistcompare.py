@@ -66,6 +66,7 @@ class Command():
     @staticmethod
     def extract_file(filename, indicator=None):
         # pylint disable = R0914, R0912 Too many local variables (16/15) / Too many branches (13/12)
+        # pylint disable = too-many-locals
         """Extract the dir-entries from given file
 
         Args:
