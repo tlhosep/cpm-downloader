@@ -1,5 +1,19 @@
 # cpm downloader
 
+## Background (why I needed this tool)
+Back in the 80ies I bought a CP/M system (PROF80) and added certain hardware and finally also a harddisc (20MB, very expensive). Now after more than 40 years I pulled the old system out of the rack and started it. OK, system clock did no longer work (battery wass off duty) but it booted :) Lucky me.
+Out of historic reasons I wanted to backup the contained data from the system...
+
+But the system lacked any valid interfaces like USB... 
+
+The only interfaces to export old data from the harddisc were Floppy-drives that worked in a way, but not optimal and 5,25" discs are hard to read, the 3,5" floppy did not work for unknown reasons... 
+
+But nevertheless the system had an **serial adapter** with 25 pins. This adapter still worked, at least it was able to send data. Receiving data was a bit too much as I had to use the adapter that used CPU wait cycles to interpret the incoming data. The interfaces connected to some better working SIO hardware could not establish a connection as the baudrates were weird :( 
+
+Thus I ended in the situation that the only way is to push forward the data over the serial line from the CP/M system to my Mac...
+
+Thats where the whole story started. Please read ahead if you might face a similar problem with old systems...
+
 ## Purpose
 The tool is needed when there is no real application on the other end to care about a real protocol like Kermit.
 The tool is also needed when the ability to transfer data to the other PC is somehow limited due to the serial line not fully working
@@ -34,14 +48,14 @@ DCD pin	8  ----|         |----- pin 8 DCD
 ## MacOS
 If you try to run the app on MacOs, the following library has to be installed:
 ```
-pip3 install pyObjC`
+pip3 install pyObjC
 ```
 If not, the sound could not be played...
 
 The module is no longer part of the requirements.txt as that hinders the build pipeline from working.
 
 ## Protocol
-The format to be send over the line:
+The format to be send over the line from CP/M to MAC:
 
 ```
 <Bytes….>
@@ -53,13 +67,13 @@ Filename | quit | #_<folder>
 
 ## Server (CP/M)
 ### Prepare
-Setup files using workstation or any other editor with these contents:
+Setup files (using wordstar or any other editor) with these contents:
 
-```
-Filename	Content
-Stop.sep	>>>+++STOP+++<<<
-Go.sep	<<<+++GO+++>>>
-```
+|Filename|Content|
+|--------|-------|
+|STOP.SEP|>>>+++STOP+++<<<|
+|GO.SEP|<<<+++GO+++>>>|
+
 Prepare the aux device to use 9600, 8N1 as the default setup
 
 ### Manual sequence
@@ -144,3 +158,6 @@ Major command-line parameter:
 ```
  --file1 <Full path to file> --file2 <Full path to file>
 ```
+
+## Finally
+Have fun :)

@@ -86,6 +86,8 @@ class Command():
         dir_list_files_regex=re.compile("((\S+)\s+(\S+)\s+(\d+)k\s+(\d+) (.{12})\s*)")
         empty_line_regex=re.compile("^\s*$")
         filelist=[]
+        drive=""
+        user=""
         try:
             state=DirFileState.start
             with open(filename,"r",encoding='ascii') as f1:
