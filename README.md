@@ -1,18 +1,26 @@
 # cpm downloader
 
+My system:
+
+<img src="images/prof80_CPM.png" with="400">
+
 ## Background (why I needed this tool)
-Back in the 80ies I bought a CP/M system (PROF80) and added certain hardware and finally also a harddisc (20MB, very expensive). Now after more than 40 years I pulled the old system out of the rack and started it. OK, system clock did no longer work (battery wass off duty) but it booted :) Lucky me.
+Back in the 80ies I bought a CP/M system (PROF80) and added certain hardware and finally also a harddisc (20MB, very expensive). Now after more than 40 years I pulled the old system out of the rack and started it. OK, system clock did no longer work (battery was off-duty) but it booted :) Lucky me.
 Out of historic reasons I wanted to backup the contained data from the system...
 
 But the system lacked any valid interfaces like USB... 
 
-The only interfaces to export old data from the harddisc were Floppy-drives that worked in a way, but not optimal and 5,25" discs are hard to read, the 3,5" floppy did not work for unknown reasons... 
+The only interfaces to export old data from the harddisc were Floppy-drives that worked in a way, but not optimal and 5.25" discs are hard to read, the 3.5" floppy did not work for unknown reasons... 
 
 But nevertheless the system had an **serial adapter** with 25 pins. This adapter still worked, at least it was able to send data. Receiving data was a bit too much as I had to use the adapter that used CPU wait cycles to interpret the incoming data. The interfaces connected to some better working SIO hardware could not establish a connection as the baudrates were weird :( 
 
 Thus I ended in the situation that the only way is to push forward the data over the serial line from the CP/M system to my Mac...
 
-Thats where the whole story started. Please read ahead if you might face a similar problem with old systems...
+In such situations you would normally have used kermit for such, but that did not start correctly...
+
+So the whole story started.
+
+Please read ahead if you might face a similar problem with older systems...
 
 ## Purpose
 The tool is needed when there is no real application on the other end to care about a real protocol like Kermit.
@@ -55,7 +63,7 @@ If not, the sound could not be played...
 The module is no longer part of the requirements.txt as that hinders the build pipeline from working.
 
 ## Protocol
-The format to be send over the line from CP/M to MAC:
+The binary format to be send over the line from CP/M to MAC:
 
 ```
 <Bytes….>
@@ -65,7 +73,16 @@ Filename | quit | #_<folder>
 <Bytes…>
 ```
 
+STOP and Go are mandatory, I used this sequence of chars as they usually do not occur in files :D 
+In between a command has to be issued, one of these:
+1. Filename = Name to store the followin bytestream
+2. quit = stop the transfer and close the applicatioon on the Mac
+3. #_<folder> = cd to the named folder on the MAC, so subsequents files will be placed in this folder
+
 ## Server (CP/M)
+
+<img src="images/prof80_System.png" width="500">
+
 ### Prepare
 Setup files (using wordstar or any other editor) with these contents:
 
