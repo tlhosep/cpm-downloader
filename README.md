@@ -2,7 +2,7 @@
 
 My system:
 
-<img src="images/prof80_CPM.png" with="400">
+<img src="images/Prof80_CPM.png" with="400">
 
 ## Background (why I needed this tool)
 Back in the 80ies I bought a CP/M system (PROF80) and added certain hardware and finally also a harddisc (20MB, very expensive). Now after more than 40 years I pulled the old system out of the rack and started it. OK, system clock did no longer work (battery was off-duty) but it booted :) Lucky me.
