@@ -37,7 +37,7 @@ from tlu_utils import get_git_version,add_parser_log_args,cmdline_main,configure
 
 logger = logging.getLogger(__name__)
 
-class DirFileState:          # pylint: disable = too-few-public-methods (1/2)
+class DirFileState():
     """States for statemachine
     """
     def __init__(self, action):
@@ -65,8 +65,7 @@ class Command():
                             required=False, action='store')
     @staticmethod
     def extract_file(filename, indicator=None):
-        # pylint: disable = R0914, R0912 Too many local variables (16/15) / Too many branches (13/12)
-        # pylint: disable = too-many-locals
+        #pylint: disable=too-many-locals,too-many-branches
         """Extract the dir-entries from given file
 
         Args:
@@ -76,16 +75,15 @@ class Command():
         Returns:
             list: List of filenames; <Drive><User>_<filename>_<Indicator for File>
         """
-        # pylint: disable = W1401
         DirFileState.start=DirFileState("start")
-        dir_string_regex=re.compile("Directory For Drive (\S):  User \s+(\d)")
+        dir_string_regex=re.compile(r"Directory For Drive (\S):  User \s+(\d)")
         DirFileState.dirheader=DirFileState("header")
         dir_list_start="------------ ------ ------"
         DirFileState.dirlist=DirFileState("dirlist")
         # "ALLFILES LST     0k      0 Dir RW       CCP      COM     4k     25 Sys RW      "
         # 1=fil, 2=filsub, 3=sizek, 4= blocks, 5=attrs (12 char)
-        dir_list_files_regex=re.compile("((\S+)\s+(\S+)\s+(\d+)k\s+(\d+) (.{12})\s*)")
-        empty_line_regex=re.compile("^\s*$")
+        dir_list_files_regex=re.compile(r"((\S+)\s+(\S+)\s+(\d+)k\s+(\d+) (.{12})\s*)")
+        empty_line_regex=re.compile(r"^\s*$")
         filelist=[]
         drive=""
         user=""
@@ -132,7 +130,7 @@ class Command():
         return filelist
 
     @staticmethod
-    def handle(*args, **options):  # @UnusedVariable pylint: disable=unused-argument
+    def handle(*args, **options):  #pylint: disable=unused-argument
         """
         Main loop to process the commandline
 
