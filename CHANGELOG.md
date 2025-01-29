@@ -1,3 +1,9 @@
+## 1.0.1 (2024-01-30)
+
+### other (1 change)
+
+- [Small amendments for a better linting score](thomas/cpm-downloader@cf712ebfff84aead159d0f837c028939591c2bad)
+
 ## 1.0.0 (2024-01-29)
 
 ### other (2 changes)
